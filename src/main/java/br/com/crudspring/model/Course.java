@@ -6,12 +6,14 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 
 
 @Data
 @Entity
 @SQLDelete(sql = "UPDATE Course SET status = 'Inativo' WHERE id = ?")
+@Where(clause = "status != 'Inativo'") // This will filter out soft-deleted records
 //@Table(name = "courses") // Optional: specify table name if different from class name
 public class Course {
 
