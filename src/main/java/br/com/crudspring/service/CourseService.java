@@ -1,61 +1,70 @@
 package br.com.crudspring.service;
 
+import br.com.crudspring.dto.CourseDTO;
+import br.com.crudspring.dto.mapper.CourseMapper;
+import br.com.crudspring.exception.RecordNotFoundException;
 import br.com.crudspring.model.Course;
 import br.com.crudspring.repository.CourseRepository;
 import br.com.crudspring.exception.NotItemsFoundException;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+
+
+@Validated
 @Service
-@AllArgsConstructor
 public class CourseService {
-    @Autowired
-    private CourseRepository courseRepository;
 
-    public ResponseEntity<List<Course>> list(){
-        return ResponseEntity.ok(courseRepository.findAll());
+    private final CourseRepository courseRepository;
+    private final CourseMapper courseMapper;
+
+    public CourseService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+        this.courseMapper = new CourseMapper();
     }
 
-    public ResponseEntity<Course> findById(Long id) {
-        var course = courseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Course not found with id: " + id));
-        return ResponseEntity.ok(course);
+    public List<CourseDTO> list(){
+
+        return courseRepository.findAll()
+                .stream()
+                .map(courseMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public  ResponseEntity<Course> save( Course course) {
+    public CourseDTO findById(@PathVariable @NotNull @Positive Long id) {
+        return courseRepository.findById(id)
+                .map(courseMapper::toDTO)
+                .orElseThrow(() -> new RecordNotFoundException(id));
 
-//        if (course.getId() != null) {
-//            var existingCourse = courseRepository.findById(course.getId());
-////            if (existingCourse.isPresent()) {
-////                throw new ResourceAlredyExistsException("Course with id " + course.getId() + " already exists.");
-////            }
-//        }
-        return ResponseEntity.ok(courseRepository.save(course));
     }
 
-    public ResponseEntity<Course> update(Long id, Course course) {
+    public CourseDTO save(@Valid @NotNull CourseDTO course) {
+        return courseMapper.toDTO(courseRepository.save(courseMapper.toEntity(course)));
+    }
+
+    public CourseDTO update( @PathVariable @NotNull @Positive  Long id, CourseDTO course) {
         return courseRepository.findById(id)
                 .map(existingCourse -> {
                     // Atualiza apenas os campos necessários
-                    existingCourse.setName(course.getName());
-                    existingCourse.setCategory(course.getCategory());
+                    existingCourse.setName(course.name());
+                    existingCourse.setCategory(course.category());
                     // Outros campos que precisam ser atualizados
 
-                    return ResponseEntity.ok(courseRepository.save(existingCourse));
+                    return(courseMapper.toDTO( courseRepository.save(existingCourse)));
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new RecordNotFoundException(id));
     }
 
-    public ResponseEntity<Void> delete(Long id) {
-        return courseRepository.findById(id)
-                .map(course -> {
-                    courseRepository.delete(course);
-                    return ResponseEntity.noContent().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public void delete(@PathVariable @NotNull @Positive  Long id) {
+         courseRepository.delete(courseRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id)));
     }
 }
