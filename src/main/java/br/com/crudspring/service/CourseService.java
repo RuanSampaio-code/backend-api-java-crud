@@ -2,6 +2,7 @@ package br.com.crudspring.service;
 
 import br.com.crudspring.dto.CourseDTO;
 import br.com.crudspring.dto.mapper.CourseMapper;
+import br.com.crudspring.enums.Category;
 import br.com.crudspring.exception.RecordNotFoundException;
 import br.com.crudspring.model.Course;
 import br.com.crudspring.repository.CourseRepository;
@@ -55,7 +56,7 @@ public class CourseService {
                 .map(existingCourse -> {
                     // Atualiza apenas os campos necessários
                     existingCourse.setName(course.name());
-                    existingCourse.setCategory(course.category());
+                    existingCourse.setCategory(Category.FRONTEND);
                     // Outros campos que precisam ser atualizados
 
                     return(courseMapper.toDTO( courseRepository.save(existingCourse)));

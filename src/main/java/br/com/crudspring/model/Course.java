@@ -1,5 +1,9 @@
 package br.com.crudspring.model;
 
+import br.com.crudspring.enums.Category;
+import br.com.crudspring.enums.Status;
+import br.com.crudspring.enums.converters.CategoryConverter;
+import br.com.crudspring.enums.converters.StatusConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -28,18 +32,14 @@ public class Course {
     private String name;
 
     @NotNull
-    @NotBlank
-    @Length( max = 20)
-    @Pattern(regexp = "Back-end|Front-end|Fullstack", message = "Category must be Back-end, Front-end or Fullstack")
     @Column(length = 20, nullable = false)
-    private String category;
+    @Convert(converter = CategoryConverter.class)
+    private Category category;
 
 
     @NotNull
-    @NotBlank
-    @Length( max = 10)
-    @Pattern(regexp = "Ativo|Inativo", message = "Category must be Ativo, Inativo")
     @Column(length = 20, nullable = false)
-    private String status = "Ativo"; // Default value set to "Ativo"
+    @Convert(converter = StatusConverter.class)
+    private Status status = Status.ATIVO; // Default value set to "Ativo"
 
 }

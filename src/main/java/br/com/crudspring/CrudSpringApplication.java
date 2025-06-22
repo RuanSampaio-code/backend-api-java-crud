@@ -1,5 +1,6 @@
 package br.com.crudspring;
 
+import br.com.crudspring.enums.Category;
 import br.com.crudspring.model.Course;
 import br.com.crudspring.repository.CourseRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -20,7 +21,7 @@ public class CrudSpringApplication {
 			// This method can be used to initialize data or perform startup tasks
 			Course course1 = new Course();
 			course1.setName("Spring Boot Basics");
-			course1.setCategory("Fullstack");
+			course1.setCategory(Category.FRONTEND);
 			courseRepository.save(course1);
 		};
 	}

@@ -1,10 +1,10 @@
 package br.com.crudspring.dto.mapper;
 
 import br.com.crudspring.dto.CourseDTO;
+import br.com.crudspring.enums.Category;
 import br.com.crudspring.model.Course;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
 public class CourseMapper {
@@ -32,8 +32,7 @@ public class CourseMapper {
         }
 
         course.setName(courseDTO.name());
-        course.setCategory(courseDTO.category());
-        course.setStatus("Ativo");
+        course.setCategory(Category.FRONTEND);
         return course;
     }
 }
