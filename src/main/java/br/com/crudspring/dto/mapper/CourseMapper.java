@@ -16,8 +16,7 @@ public class CourseMapper {
        return new CourseDTO(
                 course.getId(),
                 course.getName(),
-                course.getCategory(),
-                course.getStatus()
+                course.getCategory().getValue()
         );
     }
 
@@ -32,7 +31,22 @@ public class CourseMapper {
         }
 
         course.setName(courseDTO.name());
-        course.setCategory(Category.FRONTEND);
+        course.setCategory(converterCategoryValue(courseDTO.category()));
         return course;
+    }
+
+    public Category converterCategoryValue(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        switch (value){
+            case "Back-end":
+                return Category.BACKEND;
+            case "Front-end":
+                return Category.FRONTEND;
+            default:
+                throw new IllegalArgumentException("Categoria inválida: " + value);
+        }
     }
 }

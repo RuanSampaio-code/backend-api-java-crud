@@ -2,11 +2,8 @@ package br.com.crudspring.service;
 
 import br.com.crudspring.dto.CourseDTO;
 import br.com.crudspring.dto.mapper.CourseMapper;
-import br.com.crudspring.enums.Category;
 import br.com.crudspring.exception.RecordNotFoundException;
-import br.com.crudspring.model.Course;
 import br.com.crudspring.repository.CourseRepository;
-import br.com.crudspring.exception.NotItemsFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -40,7 +37,7 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public CourseDTO findById(@PathVariable @NotNull @Positive Long id) {
+    public CourseDTO findById(@NotNull @Positive Long id) {
         return courseRepository.findById(id)
                 .map(courseMapper::toDTO)
                 .orElseThrow(() -> new RecordNotFoundException(id));
@@ -51,12 +48,12 @@ public class CourseService {
         return courseMapper.toDTO(courseRepository.save(courseMapper.toEntity(course)));
     }
 
-    public CourseDTO update( @PathVariable @NotNull @Positive  Long id, CourseDTO course) {
+    public CourseDTO update( @NotNull @Positive  Long id, CourseDTO course) {
         return courseRepository.findById(id)
                 .map(existingCourse -> {
                     // Atualiza apenas os campos necessários
                     existingCourse.setName(course.name());
-                    existingCourse.setCategory(Category.FRONTEND);
+                    existingCourse.setCategory(courseMapper.converterCategoryValue(course.category()));
                     // Outros campos que precisam ser atualizados
 
                     return(courseMapper.toDTO( courseRepository.save(existingCourse)));
